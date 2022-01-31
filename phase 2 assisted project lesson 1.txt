@@ -1,0 +1,128 @@
+sisindri: package com.sisi.ValidateLogin;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+
+@WebServlet("/dashboard")
+public class Dashboard extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+
+		HttpSession session = request.getSession();
+
+		PrintWriter out = response.getWriter();
+
+//		Check whether the session already exists
+		if (session.getAttribute("userName") != null) {
+
+			out.println("<h3>Welcome " + session.getAttribute("userName"));
+
+			out.println("<br> You are now logged in!!</h3>");
+
+			out.println("<br><p><h4><a href='logout'>LOGOUT</a></h4>");
+		}
+		else {
+			response.sendRedirect("login_validate.html");
+		}
+
+	}
+
+}
+sisindri: <!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>login_validate</title>
+</head>
+<body>
+<form action="login" method="get">
+<input type="text" name="userName" placeholder="Enter your Name"><br>
+<input type="password" name="userPassword" placeholder="Enter your Paasword"><br><br>
+<input type="submit" value="LOGIN">
+</form>
+</body>
+</html>
+sisindri: package com.sisind.ValidateLogin;
+
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+/**
+ * Servlet implementation class User_Logout
+ */
+@WebServlet("/logout")
+public class User_Logout extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		
+		PrintWriter out = response.getWriter();
+		
+//		Invalidate the session here
+		request.getSession().invalidate();
+		
+		out.println("<h2>You are logged out!<br><br>");
+		
+		out.println("<br><br><a href='login_validate.html'>Login again</a>");
+	}
+
+}
+sisindri: package com.sisind.ValidateLogin;
+import java.io.IOException;
+import java.io.PrintWriter;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+@WebServlet("/login")
+public class User_Login extends HttpServlet {
+	private static final long serialVersionUID = 1L;
+
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		response.setContentType("text/html");
+		
+		PrintWriter out = response.getWriter();
+		
+		String uName = request.getParameter("userName");
+		String uPassword = request.getParameter("userPassword");
+		
+//		Get a reference to the HttpSession object
+		HttpSession theSession = request.getSession();
+		
+//		Validate the username
+		if(uName.trim().equals("sisind")  && uPassword.trim().equals("sisind10")) {
+//			Save the username in the session
+			theSession.setAttribute("userName", uName);
+			theSession.setAttribute("userPassword", uPassword);
+//			Redirect to the Dashboard
+			response.sendRedirect("dashboard");	
+		}
+		else {
+			out.println("<font color='red'>Invalid username or Password!!</font>");
+			RequestDispatcher dispatcher = request.getRequestDispatcher("login_validate.html");
+			dispatcher.include(request, response);
+		}
+	}
+
+}
